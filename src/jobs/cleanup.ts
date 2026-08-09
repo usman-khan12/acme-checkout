@@ -9,7 +9,7 @@ export async function cleanupExpiredUploads(): Promise<number> {
   const files = await openai.files.list({ purpose: "user_data" });
   for (const file of files.data) {
     if (file.created_at < cutoff) {
-      await openai.files.del(file.id);
+      await openai.files.delete(file.id);
       deleted += 1;
     }
   }
@@ -18,5 +18,5 @@ export async function cleanupExpiredUploads(): Promise<number> {
 
 // Retired fine-tunes are removed once their replacement has been promoted.
 export async function retireModel(modelId: string): Promise<void> {
-  await openai.models.del(modelId);
+  await openai.models.delete(modelId);
 }

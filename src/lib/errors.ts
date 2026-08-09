@@ -11,7 +11,7 @@ export interface LoggedFailure {
 export function describeOpenAiFailure(err: unknown): LoggedFailure | null {
   if (!(err instanceof APIError)) return null;
   return {
-    requestId: err.request_id ?? null,
+    requestId: err.requestID ?? null,
     status: err.status,
     message: err.message,
   };

@@ -12,7 +12,7 @@ export const supportRouter = Router();
 supportRouter.post("/classify", async (req, res) => {
   const body = BodySchema.parse(req.body);
   try {
-    const completion = await openai.beta.chat.completions.parse({
+    const completion = await openai.chat.completions.parse({
       model: "gpt-4o-2024-08-06",
       messages: [
         {
