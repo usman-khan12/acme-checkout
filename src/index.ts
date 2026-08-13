@@ -3,6 +3,7 @@ import { supportRouter } from "./routes/support";
 import { transcriptsRouter } from "./routes/transcripts";
 import { checkoutRouter } from "./routes/checkout";
 import { webhooksRouter } from "./routes/webhooks";
+import { opsRouter } from "./routes/ops";
 import { openai } from "./lib/client";
 import { TriageAgent } from "./agents/triage";
 import { recentPayouts } from "./lib/payouts";
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/support", supportRouter);
 app.use("/transcripts", transcriptsRouter);
 app.use("/checkout", checkoutRouter);
+app.use("/ops", opsRouter);
 
 app.get("/finance/payouts", async (_req, res) => {
   res.json({ payouts: await recentPayouts(50) });
