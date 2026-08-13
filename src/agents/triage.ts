@@ -22,6 +22,7 @@ export class TriageAgent {
         { role: "system", content: "You triage refund requests for a storefront." },
         { role: "user", content: `Order ${orderId}: ${message}` },
       ],
+      toolContext: undefined,
       tools: [
         {
           type: "function",
