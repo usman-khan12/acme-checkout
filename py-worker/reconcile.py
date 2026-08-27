@@ -45,3 +45,13 @@ def reconcile(created_after: int) -> list[str]:
         if charge["id"] not in ledger_ids:
             mismatches.append(charge["id"])
     return mismatches
+
+
+def start_payment(amount: int, customer_id: str):
+    intent = stripe.PaymentIntent.create(
+        amount=amount,
+        currency="usd",
+        customer=customer_id,
+        allowed_payment_method_types=["card", "link"],
+    )
+    return intent["client_secret"]
