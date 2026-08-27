@@ -18,5 +18,5 @@ export async function cleanupExpiredUploads(): Promise<number> {
 
 // Retired fine-tunes are removed once their replacement has been promoted.
 export async function retireModel(modelId: string): Promise<void> {
-  await openai.models.del(modelId);
+  await openai.models.delete(modelId);
 }
