@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Background billing reconciliation worker for Acme Checkout"
 requires-python = ">=3.12"
 dependencies = [
-    "stripe==7.14.0",
+    "stripe==15.6.0",
     "openai==0.28.1",
     "requests>=2.31.0",
 ]
