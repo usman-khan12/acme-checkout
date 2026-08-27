@@ -6,9 +6,9 @@ const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET ?? "";
 
 export const webhooksRouter = Router();
 
-// Thin events carry only an id and type; the payload is fetched on demand so
-// we never trust the body for anything but routing.
-function summarize(event: Stripe.ThinEvent): string {
+// Event notifications identify an event by id and type; the payload is fetched
+// on demand so we never trust the body for anything but routing.
+function summarize(event: Stripe.V2.Core.EventNotification): string {
   return `${event.type} (${event.id})`;
 }
 
@@ -16,9 +16,9 @@ function summarize(event: Stripe.ThinEvent): string {
 // verification and parsing happen in one step.
 webhooksRouter.post("/stripe", express.raw({ type: "application/json" }), async (req, res) => {
   const signature = req.header("stripe-signature") ?? "";
-  let event: Stripe.ThinEvent;
+  let event: Stripe.V2.Core.EventNotification;
   try {
-    event = stripe.parseThinEvent(req.body as Buffer, signature, WEBHOOK_SECRET);
+    event = stripe.parseEventNotification(req.body as Buffer, signature, WEBHOOK_SECRET);
   } catch {
     res.status(400).json({ error: "invalid_signature" });
     return;
@@ -35,7 +35,7 @@ webhooksRouter.post("/stripe", express.raw({ type: "application/json" }), async 
 
 // The event carries an auth context rather than the record itself — pull the
 // full object before acting on it.
-async function handleMeterError(event: Stripe.V2.EventBase): Promise<void> {
+async function handleMeterError(event: Stripe.V2.Core.EventNotification): Promise<void> {
   if (!event.livemode) return;
   console.warn(`[stripe] meter error ${event.id} (reason ${event.reason?.type ?? "none"})`);
 }

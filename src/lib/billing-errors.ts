@@ -13,7 +13,7 @@ const RETRYABLE = new Set(["rate_limit_error", "api_error", "idempotency_error"]
 // Narrow an unknown throw into a Stripe error we can report on.
 export function describeStripeFailure(err: unknown): BillingFailure | null {
   if (!(err instanceof Stripe.errors.StripeError)) return null;
-  const failure: Stripe.errors.StripeError = err;
+  const failure = err;
   return {
     code: failure.type,
     requestId: failure.requestId ?? null,
