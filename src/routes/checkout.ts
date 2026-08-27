@@ -6,7 +6,7 @@ import { customerFacingMessage } from "../lib/billing-errors";
 const CartSchema = z.object({
   priceId: z.string(),
   quantity: z.number().int().positive().max(50),
-  customerEmail: z.string().email(),
+  customerEmail: z.email(),
 });
 
 export const checkoutRouter = Router();
