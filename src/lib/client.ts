@@ -5,6 +5,6 @@ import OpenAI from "openai";
 // support endpoints call the API on the hot path of a customer request.
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  httpAgent: new Agent({ keepAlive: true }),
+  fetchOptions: { agent: new Agent({ keepAlive: true }) },
   maxRetries: 3,
 });
