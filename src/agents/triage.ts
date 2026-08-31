@@ -16,7 +16,7 @@ export class TriageAgent {
   constructor(private readonly ai: OpenAI) {}
 
   async run(orderId: string, message: string): Promise<string> {
-    const runner = this.ai.beta.chat.completions.runTools({
+    const runner = this.ai.chat.completions.runTools({
       model: "gpt-4o",
       messages: [
         { role: "system", content: "You triage refund requests for a storefront." },
