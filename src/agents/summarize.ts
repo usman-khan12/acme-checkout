@@ -14,14 +14,20 @@ export interface TicketSummary {
 
 // Condense a support thread into one line for the ops digest.
 export async function summarizeThread(messages: string[]): Promise<string> {
-  const response = await claude.completions.create({
+  const response = await claude.messages.create({
     model: "claude-2.1",
-    max_tokens_to_sample: 300,
-    prompt: `\n\nHuman: Summarize this support thread in one sentence:\n${messages.join(
-      "\n",
-    )}\n\nAssistant:`,
+    max_tokens: 300,
+    messages: [
+      {
+        role: "user",
+        content: `Summarize this support thread in one sentence:\n${messages.join(
+          "\n",
+        )}`,
+      },
+    ],
   });
-  return response.completion.trim();
+  const first = response.content[0];
+  return first && first.type === "text" ? first.text.trim() : "";
 }
 
 // Classify the customer's tone so the rota can triage the angry ones first.
