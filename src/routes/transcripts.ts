@@ -13,6 +13,6 @@ export const transcriptsRouter = Router();
 
 // Fetch the raw content of an uploaded call transcript for audit review.
 transcriptsRouter.get("/:fileId/raw", async (req, res) => {
-  const content = await llm.files.retrieveContent(req.params.fileId);
+  const content = await (await llm.files.content(req.params.fileId)).text();
   res.type("text/plain").send(content);
 });
