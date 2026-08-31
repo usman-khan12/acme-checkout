@@ -10,16 +10,16 @@ import { sendDigestBatch, sendingDomainStatus } from "../lib/notify";
 const DigestSchema = z.object({
   // Recipients are validated individually so one bad address names itself in
   // the error instead of failing the whole batch anonymously.
-  recipients: z.array(z.string().email()).nonempty(),
+  recipients: z.array(z.email()).nonempty(),
   subject: z.string().min(1).max(200),
   bodyHtml: z.string(),
-  dashboardUrl: z.string().url(),
+  dashboardUrl: z.url(),
 });
 
 const RefundSchema = z.object({
   chargeId: z.string().startsWith("ch_"),
   amountCents: z.number().int().positive().optional(),
-  requestedBy: z.string().uuid(),
+  requestedBy: z.uuid(),
   // Free-form audit annotations the support agent types in.
   annotations: z.record(z.string()),
 });
@@ -28,7 +28,7 @@ const AlertPatchSchema = z.object({
   channel: z.string(),
   ts: z.string(),
   text: z.string(),
-  postedAt: z.string().datetime(),
+  postedAt: z.iso.datetime(),
 });
 
 export const opsRouter = Router();
@@ -38,7 +38,7 @@ opsRouter.post("/digest", async (req, res) => {
   const parsed = DigestSchema.safeParse(req.body);
   if (!parsed.success) {
     // Surface the first problem with its path so the caller can fix it.
-    const first = parsed.error.errors[0];
+    const first = parsed.error.issues[0];
     return res.status(400).json({ error: `${first?.path.join(".")}: ${first?.message}` });
   }
   const status = await sendingDomainStatus(String(process.env.RESEND_DOMAIN_ID));
@@ -57,7 +57,7 @@ opsRouter.post("/digest", async (req, res) => {
 opsRouter.post("/refund", async (req, res) => {
   const parsed = RefundSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.errors.map((e) => e.message).join("; ") });
+    return res.status(400).json({ error: parsed.error.issues.map((e) => e.message).join("; ") });
   }
   const refund = await refundCharge(parsed.data.chargeId, parsed.data.amountCents);
   res.json({ refundId: refund.id, status: refund.status });
@@ -85,7 +85,7 @@ opsRouter.get("/customers/:id/charges", async (req, res) => {
 opsRouter.patch("/alerts", async (req, res) => {
   const parsed = AlertPatchSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.errors[0]?.message ?? "invalid" });
+    return res.status(400).json({ error: parsed.error.issues[0]?.message ?? "invalid" });
   }
   await updateOrderAlert(parsed.data.channel, parsed.data.ts, parsed.data.text);
   res.status(204).end();
