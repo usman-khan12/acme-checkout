@@ -12,7 +12,7 @@ LEDGER_API = "https://ledger.internal.acme.dev"
 
 def recent_charges(limit: int = 100):
     charges = stripe.Charge.list(limit=limit)
-    return charges["data"]
+    return charges.data
 
 
 def refund_charge(charge_id: str, amount: int | None = None):
@@ -52,6 +52,6 @@ def start_payment(amount: int, customer_id: str):
         amount=amount,
         currency="usd",
         customer=customer_id,
-        allowed_payment_method_types=["card", "link"],
+        payment_method_types=["card", "link"],
     )
     return intent["client_secret"]
